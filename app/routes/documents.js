@@ -1,5 +1,6 @@
 const { ingestDocuments } = require('../services/vector-store')
 const { loadFile } = require('../services/document-loader')
+const { invokeModel } = require('../services/llm')
 // const { loadFilesFromFolder } = require('../services/document-loader')
 
 module.exports = [{
@@ -16,6 +17,8 @@ module.exports = [{
   path: '/documents/injest',
   options: {
     handler: async (request, h) => {
+      await invokeModel()
+      
       const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
       
       console.log(docs)
