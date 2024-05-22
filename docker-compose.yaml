@@ -8,3 +8,8 @@ services:
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-template-node-local
       APPINSIGHTS_CONNECTIONSTRING: ${APPINSIGHTS_CONNECTIONSTRING}
+  db:
+    image: ankane/pgvector
+    ports: ['5433:5432']
+    volumes: ['./data:/var/lib/postgresql/data']
+    environment: ['POSTGRES_PASSWORD=password','POSTGRES_USER=admin','POSTGRES_DB=api']
