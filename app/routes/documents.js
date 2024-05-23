@@ -1,7 +1,8 @@
 const { ingestDocuments } = require('../services/vector-store')
 const { loadFile } = require('../services/document-loader')
 const { model, embeddings } = require('../llm/ai')
-// const { loadFilesFromFolder } = require('../services/document-loader')
+const { generateResponse } = require('../llm/generate')
+const { prompts, types } = require('../llm/prompts')
 
 module.exports = [{
   method: 'GET',
@@ -17,9 +18,18 @@ module.exports = [{
   path: '/documents/ingest',
   options: {
     handler: async (request, h) => {
-      let llm = model()
-      const response = await llm.invoke('a test string')
-      return response
+      try {
+        const llm = model()
+        const prompt = prompts[types.GENERATE_PROMPT]
+        const response = await generateResponse(llm, prompt, 'What is NEIRF?')
+      
+      
+        //const response = await run('Translate "Hello World" into German.')
+        console.log(response)
+      }
+      catch(error) {
+        console.log(error)
+      }
       
       // const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
       

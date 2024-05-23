@@ -2,7 +2,7 @@ const { RunnablePassthrough, RunnableMap, RunnableLambda, RunnableSequence } = r
 const { StringOutputParser } = require('@langchain/core/output_parsers')
 const { ChatPromptTemplate } = require('@langchain/core/prompts')
 const { formatDocumentsAsString } = require('langchain/util/document')
-const { getVectorStore } = require('../vectorstore/vector-store')
+const { getVectorStore } = require('../services/vector-store')
 const { prompts, types } = require('./prompts')
 
 const getRetriever = async () => {
