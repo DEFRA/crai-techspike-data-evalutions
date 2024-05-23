@@ -1,6 +1,4 @@
-const { ingestDocuments } = require('../services/vector-store')
-const { loadFile } = require('../services/document-loader')
-const { model, embeddings } = require('../llm/ai')
+const { model } = require('../llm/ai')
 const { generateResponse } = require('../llm/generate')
 const { prompts, types } = require('../llm/prompts')
 
