@@ -15,15 +15,19 @@ const embeddings = () => {
 }
 
 const invokeModel = async (temperature = 0.9) => {
-  const llm = ChatOpenAI({
-    ...aiConfig,
-    azureOpenAIApiDeploymentName: "gpt-53-turbo",
-    onFailedAttempt,
-    temperature: temperature
-  })
-
-  const response = await llm.invoke(str)
-  return response
+  try {
+    const llm = new ChatOpenAI({
+      ...aiConfig,
+      azureOpenAIApiDeploymentName: "gpt-53-turbo",
+      onFailedAttempt,
+      temperature: temperature
+    })
+    console.log('llm', llm)
+    const response = await llm.invoke()
+    return response
+  } catch(error) {
+    console.log('error', error)
+  }
 }
 
 module.exports = {

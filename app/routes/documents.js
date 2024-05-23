@@ -14,18 +14,18 @@ module.exports = [{
 },
 {
   method: 'GET',
-  path: '/documents/injest',
+  path: '/documents/ingest',
   options: {
     handler: async (request, h) => {
       await invokeModel()
       
-      const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
+      // const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
       
-      console.log(docs)
+      // console.log(docs)
       
-      //const docs = loadFilesFromFolder('./data/NEIRF')
+      // //const docs = loadFilesFromFolder('./data/NEIRF')
     
-      await ingestDocuments(docs)
+      // await ingestDocuments(docs)
       
       return { status: '200 ok' }
     }
