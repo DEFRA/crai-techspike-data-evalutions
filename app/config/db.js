@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const dbConfig = {
   postgresConnectionOptions: {
     type: 'postgres',

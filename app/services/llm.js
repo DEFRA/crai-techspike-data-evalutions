@@ -22,7 +22,7 @@ const invokeModel = async (temperature = 0.9) => {
       onFailedAttempt,
       temperature: temperature
     })
-    console.log('llm', llm)
+    
     const response = await llm.invoke()
     return response
   } catch(error) {
