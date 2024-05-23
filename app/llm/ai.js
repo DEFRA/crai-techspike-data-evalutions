@@ -15,6 +15,7 @@ const embeddings = () => {
 }
 
 const model = (temperature = 0.9) => {
+  console.log(aiConfig)
   return new ChatOpenAI({
     ...aiConfig,
     azureOpenAIApiDeploymentName: "gpt-53-turbo",

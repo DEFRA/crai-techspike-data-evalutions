@@ -18,10 +18,12 @@ module.exports = [{
   path: '/documents/ingest',
   options: {
     handler: async (request, h) => {
+      let response;
+      
       try {
         const llm = model()
         const prompt = prompts[types.GENERATE_PROMPT]
-        const response = await generateResponse(llm, prompt, 'What is NEIRF?')
+        response = await generateResponse(llm, prompt, 'What is NEIRF?')
       
       
         //const response = await run('Translate "Hello World" into German.')
@@ -39,7 +41,7 @@ module.exports = [{
   
       // await ingestDocuments(docs)
       
-      // return { status: '200 ok' }
+      return { response }
     }
   }
 }]
