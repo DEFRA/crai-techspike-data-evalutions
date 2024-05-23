@@ -1,6 +1,6 @@
 const { ingestDocuments } = require('../services/vector-store')
 const { loadFile } = require('../services/document-loader')
-const { invokeModel } = require('../services/llm')
+const { model, embeddings } = require('../llm/ai')
 // const { loadFilesFromFolder } = require('../services/document-loader')
 
 module.exports = [{
@@ -17,17 +17,19 @@ module.exports = [{
   path: '/documents/ingest',
   options: {
     handler: async (request, h) => {
-      await invokeModel()
+      let llm = model()
+      const response = await llm.invoke('a test string')
+      return response
       
-      const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
+      // const docs = await loadFile('./data/NEIRF/15458_NEIRF_YR1_REPORT_FINAL.PDF')
       
-      console.log(docs)
+      // console.log(docs)
       
-      //const docs = loadFilesFromFolder('./data/NEIRF')
-    
-      await ingestDocuments(docs)
+      // //const docs = loadFilesFromFolder('./data/NEIRF')
+  
+      // await ingestDocuments(docs)
       
-      return { status: '200 ok' }
+      // return { status: '200 ok' }
     }
   }
 }]
