@@ -1,6 +1,6 @@
 require('dotenv').config({ path: `${__dirname}/../.env`, debug: false })
-const { getVectorStore, ingestDocuments } = require('./vectorstore/vector-store')
-const { loadFile, loadFilesFromFolder } = require('./vectorstore/document-loader')
+const { getVectorStore, ingestDocuments } = require('./services/vector-store')
+const { loadFile, loadFilesFromFolder } = require('./services/document-loader')
 const { model, embeddings } = require('./llm/ai')
 const { generateResponse } = require('./llm/generate')
 const { prompts, types } = require('./llm/prompts')

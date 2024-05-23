@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const aiConfig = {
   azureOpenAIApiInstanceName: process.env.OAI_INSTANCE_NAME,
   azureOpenAIApiKey: process.env.OAI_API_KEY,
