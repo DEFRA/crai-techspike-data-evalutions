@@ -19,14 +19,10 @@ module.exports = [{
   path: '/documents/ingest',
   options: {
     handler: async (request, h) => {
-      let response = 'Finished....\r\n\r\n'
+      let response = ''
 
       try {
-        /**/const llm = model()
-        const prompt = prompts[types.GENERATE_PROMPT]
-        response = await generateResponse(llm, prompt, 'What is NEIRF?')/**/
-
-        /**const directoryPath = `${__dirname}/../data/NEIRF/`
+        const directoryPath = `${__dirname}/../data/NEIRF/`
         const dir = fs.opendirSync(directoryPath)
         for await (const entry of dir) {
           response += `Found file: ${entry.name}\r\n`
@@ -34,13 +30,13 @@ module.exports = [{
           const docs = await loadFile(`${directoryPath}${entry.name}`)
           console.log(docs)  
           await ingestDocuments(docs)
-        }/**/
+        }
       }
       catch(error) {
         console.log(error)
       }
 
-      return { response: response?.response }
+      return { response: response }
     }
   }
 }]
