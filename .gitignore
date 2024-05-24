@@ -4,4 +4,3 @@ helm/**/*.lock
 *.tgz
 .vscode
 .env
-postgres-pgvector/data
