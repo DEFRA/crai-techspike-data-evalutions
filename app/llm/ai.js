@@ -5,7 +5,7 @@ const { OllamaEmbeddings } = require('@langchain/community/embeddings/ollama')
 const aiConfig = require('../config/ai')
 require('dotenv').config()
 
-const useModel = 'ollama'
+const useModel = process.env.USE_MODEL
 const ollamaModel = process.env.OLLAMA_MODEL
 /*
 $ ollama pull llama3
@@ -20,6 +20,7 @@ const onFailedAttempt = async (error) => {
 }
 
 const embeddings = () => {
+  console.log(useModel)
   if (useModel === 'ollama') {
     return new OllamaEmbeddings({
       baseUrl: 'http://host.docker.internal:11434',
