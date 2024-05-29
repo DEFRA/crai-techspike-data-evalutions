@@ -11,14 +11,16 @@ module.exports = [{
   path: '/query',
   options: {
     handler: async (request, h) => {
-      const { q } = request.query
+      const { q, prompt } = request.query
 
       let response = ''
 
       try {
         const llm = model()
-        const prompt = prompts[types[process.env.PROMPT]]
-        response = await generateResponse(llm, prompt, q)
+        if (!(prompt && prompt in types)) {
+          prompt = process.env.PROMPT
+        }
+        response = await generateResponse(llm, prompts[types[prompt]], q)
       }
       catch(error) {
         console.log(error)
