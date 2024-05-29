@@ -2,6 +2,7 @@ const types = {
   GENERATE_PROMPT_1: 'generate',
   GENERATE_PROMPT_2: 'generate2',
   GENERATE_PROMPT_3: 'generate3',
+  GENERATE_PROMPT_4: 'generate4',
 }
 
 const generatePrompt1 = `
@@ -67,10 +68,32 @@ If you are unable to perform sentiment analysis or find any relevant information
 [/CONTEXT]
 `
 
+const generatePrompt4 = `
+[INST]
+As an expert in data analysis, your task is to extract key textual and numeric information from the provided [DOCUMENT]. 
+
+Your goal is to identify and present concise and clear points of interest based on the extracted information, without inferring any additional details.
+
+When providing a response, ensure that the points of interest are presented in a structured and easily understandable format.
+
+If you are unable to extract any relevant information or identify any points of interest, please respond with a message stating that you are unable to provide a response.
+
+[/INST]
+
+[DOCUMENT]
+{document}
+[/DOCUMENT]
+
+[CONTEXT]
+{context}
+[/CONTEXT]
+`
+
 const prompts = {
   [types.GENERATE_PROMPT_1]: generatePrompt1,
   [types.GENERATE_PROMPT_2]: generatePrompt2,
-  [types.GENERATE_PROMPT_3]: generatePrompt3
+  [types.GENERATE_PROMPT_3]: generatePrompt3,
+  [types.GENERATE_PROMPT_4]: generatePrompt4
 }
 
 module.exports = {
