@@ -5,7 +5,7 @@ const { formatDocumentsAsString } = require('langchain/util/document')
 const { getVectorStore } = require('../services/vector-store')
 
 const getRetriever = async () => {
-  const vectorStore = await getVectorStore()
+  const vectorStore = await getVectorStore('load')
 
   return vectorStore.asRetriever()
 }
