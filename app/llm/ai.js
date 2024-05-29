@@ -20,7 +20,6 @@ const onFailedAttempt = async (error) => {
 }
 
 const embeddings = () => {
-  console.log(useModel)
   if (useModel === 'ollama') {
     return new OllamaEmbeddings({
       baseUrl: 'http://host.docker.internal:11434',
