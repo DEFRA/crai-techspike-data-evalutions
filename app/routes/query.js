@@ -4,6 +4,7 @@ const { loadFile, loadFilesFromFolder } = require('../services/document-loader')
 const { model, embeddings } = require('../llm/ai')
 const { generateResponse } = require('../llm/generate')
 const { prompts, types } = require('../llm/prompts')
+require('dotenv').config()
 
 module.exports = [{
   method: 'GET',
@@ -11,11 +12,12 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { q } = request.query
+
       let response = ''
 
       try {
         const llm = model()
-        const prompt = prompts[types.GENERATE_PROMPT]
+        const prompt = prompts[types[process.env.PROMPT]]
         response = await generateResponse(llm, prompt, q)
       }
       catch(error) {

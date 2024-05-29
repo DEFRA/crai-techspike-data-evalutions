@@ -3,9 +3,10 @@ const { ChatOllama } = require('@langchain/community/chat_models/ollama')
 const { OllamaEmbeddings } = require('@langchain/community/embeddings/ollama')
 
 const aiConfig = require('../config/ai')
+require('dotenv').config()
 
 const useModel = 'ollama'
-const ollamaModel = 'llama3' //'mistral'  //'phi3:medium', 'gemma', 'aya'
+const ollamaModel = process.env.OLLAMA_MODEL
 /*
 $ ollama pull llama3
 $ ollama run llama3
