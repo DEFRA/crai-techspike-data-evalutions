@@ -3,9 +3,11 @@ const { ChatOllama } = require('@langchain/community/chat_models/ollama')
 const { OllamaEmbeddings } = require('@langchain/community/embeddings/ollama')
 
 const aiConfig = require('../config/ai')
+require('dotenv').config()
 
-const useModel = 'ollama'
-const ollamaModel = 'llama3'
+const useModel = process.env.USE_MODEL
+const ollamaModel = process.env.OLLAMA_MODEL
+const ollamaModels = ['llama3', 'mistral', 'phi3:medium', 'gemma', 'aya']
 /*
 $ ollama pull llama3
 $ ollama run llama3
@@ -54,6 +56,8 @@ const model = (temperature = 0.9) => {
 }
 
 module.exports = {
+  useModel,
+  ollamaModel,
   embeddings,
   model
 }
