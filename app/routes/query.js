@@ -11,7 +11,7 @@ module.exports = [{
   path: '/query',
   options: {
     handler: async (request, h) => {
-      const { q, prompt } = request.query
+      let { q, prompt } = request.query
 
       let response = ''
 
