@@ -26,7 +26,19 @@ module.exports = [{
         console.log(error)
       }
 
-      return { response: response?.response }
+      let context = []
+      if (response && response.context) {
+        for (item of response.context) {
+          let itemContext = {}
+          itemContext.pageContent = item.pageContent
+          itemContext.source = item.metadata.source.substr(item.metadata.source.lastIndexOf('/') + 1)
+          itemContext.pageNumber = item.metadata.loc.pageNumber
+          itemContext.lines = { from: item.metadata.loc.lines.from, to: item.metadata.loc.lines.to }
+          context.push(itemContext)
+        }
+      }
+
+      return { response: response?.response, context }
     }
   }
 }]

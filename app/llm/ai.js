@@ -7,6 +7,7 @@ require('dotenv').config()
 
 const useModel = process.env.USE_MODEL
 const ollamaModel = process.env.OLLAMA_MODEL
+const ollamaModels = ['llama3', 'mistral', 'phi3:medium', 'gemma', 'aya']
 /*
 $ ollama pull llama3
 $ ollama run llama3
