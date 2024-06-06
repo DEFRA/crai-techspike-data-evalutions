@@ -7,11 +7,12 @@ const { prompts, types } = require('../llm/prompts')
 require('dotenv').config()
 
 module.exports = [{
-  method: 'GET',
+  method: 'POST',
   path: '/query',
   options: {
     handler: async (request, h) => {
-      let { q, prompt } = request.query
+      let q = request.payload.q
+      let prompt = request.payload.prompt
 
       let response = ''
 
@@ -38,6 +39,7 @@ module.exports = [{
         }
       }
 
+      return h.view('query', { query: q, response: response?.response, context }).code(200)
       return { response: response?.response, context }
     }
   }

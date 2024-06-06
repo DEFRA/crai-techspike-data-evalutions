@@ -1,0 +1,10 @@
+$govuk-assets-path: "~govuk-frontend/dist/govuk/assets/";
+@import "~govuk-frontend/dist/govuk/all";
+
+.nojs-hidden {
+  display: none;
+}
+
+.js-enabled .nojs-hidden {
+  display: block;
+}

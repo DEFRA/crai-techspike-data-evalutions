@@ -1,0 +1,32 @@
+{# Backstage scaffolder to render the file as is and to skip this content to interpret as template   #}
+{% extends '_layout.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">{{ serviceName }}</h1>
+
+      <form action="/query" method="post">
+        <h2 class="govuk-heading-s">Query</h2>
+        <div class="govuk-form-group">
+          <input class="govuk-input" id="event-name" name="q" type="text"value="{{ query }}">
+        </div>
+        <input type="hidden" name="prompt" value="GENERATE_PROMPT_1">
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Go
+        </button>
+      </form>
+      <hr>
+      <h2 class="govuk-heading-m">{{ query }}</h2>
+      <h3 class="govuk-heading-s">{{ response }}</h3>
+      <ol class="govuk-body">
+        {% for item in context %}
+        <li>
+          <strong>{{ item.source }}</strong><br>
+          {{ item.pageContent }}, page {{ item.pageNumber }}
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+{% endblock %}
