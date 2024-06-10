@@ -44,6 +44,7 @@
     "pg": "^8.12.0",
     "pg-format": "^1.0.4",
     "playwright": "^1.44.1",
+    "typeorm": "^0.3.20",
     "url": "^0.11.3"
   },
   "devDependencies": {

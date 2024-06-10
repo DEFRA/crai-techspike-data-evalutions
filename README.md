@@ -1,35 +1,6 @@
-# FFC Template Node
+# Core AI Data evaluation
 
-Template to support rapid delivery of microservices for FFC Platform. It contains the configuration needed to deploy a simple Hapi Node server to the Azure Kubernetes Platform.
-
-## Usage
-
-Create a new repository from this template and run `./rename.js` specifying the new name of the project and the description to use e.g.
-```
-./rename.js ffc-demo-web "Web frontend for demo workstream"
-```
-
-The script will update the following:
-
-* `package.json`: update `name`, `description`, `homepage`
-* `docker-compose.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.test.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.override.yaml`: update the service name, `image` and `container_name`
-* Rename `helm/ffc-template-node`
-* `helm/ffc-template-node/Chart.yaml`: update `description` and `name`
-* `helm/ffc-template-node/values.yaml`: update  `name`, `namespace`, `workstream`, `image`, `containerConfigMap.name`
-* `helm/ffc-template-node/templates/_container.yaml`: update the template name
-* `helm/ffc-template-node/templates/cluster-ip-service.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/config-map.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/deployment.yaml`: update the template name, list parameter of deployment and container includes
-
-### Notes on automated rename
-
-* The Helm chart deployment values in `helm/ffc-template-node/values.yaml` may need updating depending on the resource needs of your microservice
-* The rename is a one-way operation i.e. currently it doesn't allow the name being changed from to be specified
-* There is some validation on the input to try and ensure the rename is successful, however, it is unlikely to stand up to malicious entry
-* Once the rename has been performed the script can be removed from the repo
-* Should the rename go awry the changes can be reverted via `git clean -df && git checkout -- .`
+PoC created to test LLM and database integration. Uses a GOVUK web frontend to allow LLM to be queried.
 
 ## Prerequisites
 
@@ -42,9 +13,52 @@ Optional:
 
 ## Running the application
 
-The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
+The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production. use `docker-compose up --build` to start the application. Creates web and postgres instances.
 
 - A Helm chart is provided for production deployments to Kubernetes.
+
+## Env variables
+
+Environment variables are stored in .env file, ask a current developer for details. The file should contain the following:
+
+- `OAI_INSTANCE_NAME`
+- `OAI_API_KEY`
+- `OAI_API_VERSION`
+- `POSTGRES_HOST`: pg connection details, e.g. host.docker.internal
+- `POSTGRES_PORT`: e.g. 5432
+- `POSTGRES_USERNAME`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`: e.g. api
+- `USE_MODEL`: OpenAI / Ollama
+- `PROMPT`
+- `OLLAMA_MODEL`: e.g. gemma, llama3
+
+## LLM's
+
+The site currently supports 2 flavours of LLM, access is specified in `.env` file:
+
+- OpenAI ChatGTP
+- Ollama
+
+If Ollama is the chosen model, Ollama will need to be installed and run locally, e.g.:
+
+- `$ ollama serve`
+- `$ ollama run <model name>` e.g. gemma, llama3 etc. Model must match the model specified in `.env` file by entering the `OLLAMA_MODEL=...` and `USE_MODEL="ollama"` variables.
+
+## Endpoints
+
+Navigate a web browser to http://localhost:3000
+
+- `/documents/ingest` - creates embeddings for the contents of the `/app/data/NEIRF` folder and inserts into the PG database.
+- `/query` - perform RAG on the ingested documents.
+
+## SQL Agents
+
+**Currently in development.** SQL agents are WIP, with the aim of connecting to a local SQL Postgres database. The database used for testing contains embeddings from PDF files in the /`app/data/NEIRF` folder in the `knowledge_vectors` table and the contents of the `https://sciencesearch.defra.gov.uk/` website (13k+ entries). The data is currently stored in the `/data` folder in the project root. Data is stored in the `data.7z` file, which should be uncompressed using the 7-zip compression utility.
+
+Data has been web-scrapped using scripts in the `/app/scripts` folder, the results being stored in .csv and .json format.
+
+## Building and running
 
 ### Build container image
 
@@ -71,33 +85,6 @@ Use Docker Compose to run service locally.
 ```
 docker-compose up
 ```
-
-## Test structure
-
-The tests have been structured into subfolders of `./test` as per the
-[Microservice test approach and repository structure](https://eaflood.atlassian.net/wiki/spaces/FPS/pages/1845396477/Microservice+test+approach+and+repository+structure)
-
-### Running tests
-
-A convenience script is provided to run automated tests in a containerised
-environment. This will rebuild images before running tests via docker-compose,
-using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
-The command given to `docker-compose run` may be customised by passing
-arguments to the test script.
-
-Examples:
-
-```
-# Run all tests
-scripts/test
-
-# Run tests with file watch
-scripts/test -w
-```
-
-## CI pipeline
-
-This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
 ## Licence
 

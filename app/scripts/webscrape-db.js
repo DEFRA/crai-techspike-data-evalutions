@@ -13,8 +13,6 @@ const inspect = async (filename) => {
   const lengths = {}
   for (const item of results) {
     for (const key in item) {
-      //console.log(key, item[key])
-
       if (fields.indexOf(key) === -1) {
         fields.push(key)
         lengths[key] = item[key].length
@@ -69,7 +67,7 @@ const importData = async (filename) => {
     port: process.env.POSTGRES_PORT,
     user: process.env.POSTGRES_USERNAME,
     password: process.env.POSTGRES_PASSWORD,
-    database: 'api'
+    database: process.env.POSTGRES_DB
   })
 
   const fields = [
