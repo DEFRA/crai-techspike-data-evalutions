@@ -4,7 +4,6 @@ services:
       context: .
       target: production
     image: ffc-template-node
-    ports: ['11434:11434']
     container_name: ffc-template-node
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-template-node-local
