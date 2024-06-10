@@ -9,7 +9,7 @@ const { Pool } = require('pg')
 */
 
 
-
+require('dotenv').config({ path: __dirname + '/../../.env' })
 const { ChatOpenAI } = require('@langchain/openai')
 const { createSqlQueryChain } = require('langchain/chains/sql_db')
 const { SqlDatabase } = require('langchain/sql_db')
@@ -18,7 +18,8 @@ const { QuerySqlTool } = require('langchain/tools/sql')
 const { PromptTemplate } = require('@langchain/core/prompts')
 const { StringOutputParser } = require('@langchain/core/output_parsers')
 const { RunnablePassthrough, RunnableSequence, RunnableLambda } = require('@langchain/core/runnables')
-const { model } = require('./app/llm/ai')
+const { model } = require('../llm/ai')
+const dbConfig = require('../config/db')
 
 
 
@@ -40,29 +41,26 @@ from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 */
 
 
+const dbConnection = {
+  type: dbConfig.postgresConnectionOptions.type,
+  host: 'localhost', //dbConfig.postgresConnectionOptions.host,
+  port: dbConfig.postgresConnectionOptions.port,
+  username: dbConfig.postgresConnectionOptions.user,
+  password: dbConfig.postgresConnectionOptions.password,
+  database: dbConfig.postgresConnectionOptions.database
+}
 
 
 const run = async () => {
-  const datasource = new DataSource({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'admin',
-    password: 'password',
-    database: 'api',
-    //synchronize: true,
-    //logging: true,
-    //entities: [Post, Category],
-    //subscribers: [],
-    //migrations: [],
-  })
+  const datasource = new DataSource(dbConnection)
   const db = await SqlDatabase.fromDataSourceParams({
-    appDataSource: datasource
+    appDataSource: datasource,
+    ignoreTables: [dbConfig.tableName]
   })
 
-  const getSchema = () => db.getTableInfo()
-  //console.log(schema)
+  const getSchema = async () => db.getTableInfo()
   const llm = model()
+  const dbSchema = await getSchema()
 
   const template1 = `Based on the table schema below, write a SQL query that would answer the user's question:
   {schema}
@@ -226,19 +224,7 @@ const run1 = async () => {
   // // Release the client after use
   // client.release();
 
-  const datasource = new DataSource({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'admin',
-    password: 'password',
-    database: 'api',
-    //synchronize: true,
-    //logging: true,
-    //entities: [Post, Category],
-    //subscribers: [],
-    //migrations: [],
-  })
+  const datasource = new DataSource(dbConnection)
 
   const db = await SqlDatabase.fromDataSourceParams({
     appDataSource: datasource,
