@@ -1,21 +1,19 @@
 require('dotenv').config({ path: __dirname + '/../../.env' })
-const { ChatOpenAI } = require('@langchain/openai')
-const { ChatOllama } = require('@langchain/community/chat_models/ollama')
-const { createSqlQueryChain } = require('langchain/chains/sql_db')
 const { SqlDatabase } = require('langchain/sql_db')
-const { QuerySqlTool } = require('langchain/tools/sql')
-const { BaseMessage, HumanMessage, AIMessage, mapStoredMessageToChatMessage, isBaseMessage } = require('@langchain/core/messages')
-const { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts')
-const { BufferMemory, ChatMessageHistory, ConversationSummaryBufferMemory } = require('langchain/memory')
+const { BaseMessage } = require('@langchain/core/messages')
+const { ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts')
+const { BufferMemory, ChatMessageHistory } = require('langchain/memory')
 const { StringOutputParser } = require('@langchain/core/output_parsers')
-const { RunnablePassthrough, RunnableSequence, RunnableLambda, RunnableWithMessageHistory } = require('@langchain/core/runnables')
+const { RunnablePassthrough, RunnableSequence } = require('@langchain/core/runnables')
+const { CallbackHandler } = require('langfuse-langchain')
 const { DataSource } = require('typeorm')
 const { model } = require('../llm/ai')
 const dbConfig = require('../config/db')
 
+
 // Ref: https://github.com/langchain-ai/langchain/blob/master/templates/sql-ollama/sql_ollama/chain.py
 
-process.env.LANGCHAIN_TRACING_V2 = false //true
+//process.env.LANGCHAIN_TRACING_V2 = true
 //process.env.LANGCHAIN_API_KEY = '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'
 
 const dbConnection = {
@@ -37,7 +35,6 @@ const run = async () => {
 
   const getSchema = async () => db.getTableInfo()
   const llm = model()
-  const dbSchema = await getSchema()
 
   const template1 = `Based on the table schema below, write a SQL query that would answer the user's question:
   {schema}
@@ -51,45 +48,9 @@ const run = async () => {
     ['human', template1]
   ])
 
-
-
-
-
-
-/*
-  const json1 = [
-    {
-      type: "human",
-      data: { content: "hi my name is Mario", additional_kwargs: {} },
-    },
-    {
-      type: "ai",
-      data: {
-        content: "Hello, Mario! How can I assist you today?",
-        additional_kwargs: {},
-      },
-    },
-  ]
-  const messages = json1.map((x) => mapStoredMessageToChatMessage(x));
-  const ok = messages.every((x) => isBaseMessage(x));
-  console.log("ok", ok); // prints true
-  const memory1 = new BufferMemory({
-    chatHistory: new ChatMessageHistory(messages),
-    memoryKey: "chat_history",
-  });
-*/
-
-
-
-
-
-
-
-
   // Chain to query with memory
   let memory = new BufferMemory({
     chatHistory: new ChatMessageHistory(),
-    //chatHistory: new ChatMessageHistory(messages),
     returnMessages: true,
     memoryKey: 'chat_history'
   })
@@ -98,16 +59,9 @@ const run = async () => {
     RunnablePassthrough.assign({
       schema: getSchema,
       chat_history: async (x) => {
-        console.log('memory', memory)
-        //console.log('x', x)
-        return await memory.loadMemoryVariables(x)['chat_history']
+        const mem = await memory.loadMemoryVariables(x)
+        return mem['chat_history'].map((x) => new BaseMessage(x))
       }
-      /*chat_history: new RunnableLambda({
-        func: async (x) => {console.log(x, await memory.loadMemoryVariables(x))
-          const history = await memory.loadMemoryVariables(x)['chat_history']
-          return history
-        }
-      })*/
     }),
     prompt,
     llm.bind(stop=["\nSQLResult:"]),
@@ -150,15 +104,20 @@ const run = async () => {
       response: (x) => db.run(x['query'])
     }),
     promptResponse,
-    llm
+    llm,
+    new StringOutputParser()
   ])
-let history=[]
-  console.log(
-    await chain.invoke({
-      question: 'How many projects were there between 2006 and 2010',/* chat_history: [], history: []*/
-      chat_history: history ? history.map(msg => new HumanMessage(msg)) : [],
-    })
-  )
+
+  const langfuseHandler = new CallbackHandler()
+
+  const result = await chain.invoke({
+    question: 'How many projects were there between 2006 and 2010',
+    chat_history: []
+  },
+  {
+    callbacks: [langfuseHandler]
+  })
+  console.log(result)
 
   await datasource.destroy()
 }
