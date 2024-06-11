@@ -12,8 +12,6 @@ services:
     image: ankane/pgvector
     ports: ['5432:5432']
     volumes: ['./data:/var/lib/postgresql/data']
-    env_file:
-      - .env
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}'"]
       interval: 10s
