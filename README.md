@@ -32,6 +32,18 @@ Environment variables are stored in .env file, ask a current developer for detai
 - `USE_MODEL`: OpenAI / Ollama
 - `PROMPT`
 - `OLLAMA_MODEL`: e.g. gemma, llama3
+- LANGFUSE_SECRET_KEY=""
+- LANGFUSE_PUBLIC_KEY=""
+- LANGFUSE_BASEURL="http://localhost:4000"
+- LANGFUSE_SALT=""
+- NEXTAUTH_SECRET=""
+
+## Langfuse
+
+Local setup instructions:
+
+  - https://langfuse.com/docs/deployment/self-host#additional-configuration
+
 
 ## LLM's
 

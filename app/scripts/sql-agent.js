@@ -13,10 +13,10 @@ const { DataSource } = require('typeorm')
 const { model } = require('../llm/ai')
 const dbConfig = require('../config/db')
 
-// Ref: https://github.com/langchain-ai/langchain/blob/master/templates/sql-ollama/sql_ollama/chain.py
+const { CallbackHandler } = require("langfuse-langchain")
+const langfuseHandler = new CallbackHandler()
 
-process.env.LANGCHAIN_TRACING_V2 = true
-process.env.LANGCHAIN_API_KEY = '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'
+// Ref: https://github.com/langchain-ai/langchain/blob/master/templates/sql-ollama/sql_ollama/chain.py
 
 const dbConnection = {
   type: dbConfig.postgresConnectionOptions.type,
@@ -116,7 +116,10 @@ const run = async () => {
     llm
   ])
 
-  console.log(await chain.invoke({ question: 'How many projects were there between 2006 and 2010', chat_history: [] }))
+  const result = await chain.invoke({ question: 'How many projects were there between 2006 and 2010', chat_history: []}, {callbacks: [langfuseHandler]})
+  console.log(result)
+
+  // console.log(await chain.invoke({ question: 'How many projects were there between 2006 and 2010', chat_history: [] }))
 
   await datasource.destroy()
 }
