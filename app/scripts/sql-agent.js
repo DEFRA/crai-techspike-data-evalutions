@@ -4,7 +4,7 @@ const { ChatOllama } = require('@langchain/community/chat_models/ollama')
 const { createSqlQueryChain } = require('langchain/chains/sql_db')
 const { SqlDatabase } = require('langchain/sql_db')
 const { QuerySqlTool } = require('langchain/tools/sql')
-const { BaseMessage, HumanMessage, AIMessage } = require('@langchain/core/messages')
+const { BaseMessage, HumanMessage, AIMessage, mapStoredMessageToChatMessage, isBaseMessage } = require('@langchain/core/messages')
 const { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts')
 const { BufferMemory, ChatMessageHistory, ConversationSummaryBufferMemory } = require('langchain/memory')
 const { StringOutputParser } = require('@langchain/core/output_parsers')
@@ -15,8 +15,8 @@ const dbConfig = require('../config/db')
 
 // Ref: https://github.com/langchain-ai/langchain/blob/master/templates/sql-ollama/sql_ollama/chain.py
 
-process.env.LANGCHAIN_TRACING_V2 = true
-process.env.LANGCHAIN_API_KEY = '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'
+process.env.LANGCHAIN_TRACING_V2 = false //true
+//process.env.LANGCHAIN_API_KEY = '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'
 
 const dbConnection = {
   type: dbConfig.postgresConnectionOptions.type,
@@ -51,8 +51,45 @@ const run = async () => {
     ['human', template1]
   ])
 
+
+
+
+
+
+/*
+  const json1 = [
+    {
+      type: "human",
+      data: { content: "hi my name is Mario", additional_kwargs: {} },
+    },
+    {
+      type: "ai",
+      data: {
+        content: "Hello, Mario! How can I assist you today?",
+        additional_kwargs: {},
+      },
+    },
+  ]
+  const messages = json1.map((x) => mapStoredMessageToChatMessage(x));
+  const ok = messages.every((x) => isBaseMessage(x));
+  console.log("ok", ok); // prints true
+  const memory1 = new BufferMemory({
+    chatHistory: new ChatMessageHistory(messages),
+    memoryKey: "chat_history",
+  });
+*/
+
+
+
+
+
+
+
+
   // Chain to query with memory
   let memory = new BufferMemory({
+    chatHistory: new ChatMessageHistory(),
+    //chatHistory: new ChatMessageHistory(messages),
     returnMessages: true,
     memoryKey: 'chat_history'
   })
@@ -60,13 +97,13 @@ const run = async () => {
   const sqlChain = RunnableSequence.from([
     RunnablePassthrough.assign({
       schema: getSchema,
-      /*history: (x) => {
+      chat_history: async (x) => {
         console.log('memory', memory)
         //console.log('x', x)
-        return memory.loadMemoryVariables(x)['chat_history']
-      }*/
+        return await memory.loadMemoryVariables(x)['chat_history']
+      }
       /*chat_history: new RunnableLambda({
-        func: async (x) => {
+        func: async (x) => {console.log(x, await memory.loadMemoryVariables(x))
           const history = await memory.loadMemoryVariables(x)['chat_history']
           return history
         }
@@ -115,8 +152,13 @@ const run = async () => {
     promptResponse,
     llm
   ])
-
-  console.log(await chain.invoke({ question: 'How many projects were there between 2006 and 2010', chat_history: [] }))
+let history=[]
+  console.log(
+    await chain.invoke({
+      question: 'How many projects were there between 2006 and 2010',/* chat_history: [], history: []*/
+      chat_history: history ? history.map(msg => new HumanMessage(msg)) : [],
+    })
+  )
 
   await datasource.destroy()
 }
