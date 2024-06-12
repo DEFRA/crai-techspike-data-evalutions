@@ -3,6 +3,8 @@ const { StringOutputParser } = require('@langchain/core/output_parsers')
 const { ChatPromptTemplate } = require('@langchain/core/prompts')
 const { formatDocumentsAsString } = require('langchain/util/document')
 const { getVectorStore } = require('../services/vector-store')
+const { CallbackHandler } = require('langfuse-langchain')
+const langfuseHandler = new CallbackHandler()
 
 const getRetriever = async () => {
   const vectorStore = await getVectorStore('load')
@@ -45,7 +47,8 @@ const generateResponse = async (llm, prompt, document) => {
 
   const generate = await chain.invoke({
     document
-  })
+  },
+  {callbacks: [langfuseHandler]})
 
   return generate
 }
