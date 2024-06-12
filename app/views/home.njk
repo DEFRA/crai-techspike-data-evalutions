@@ -1,5 +1,6 @@
 {# Backstage scaffolder to render the file as is and to skip this content to interpret as template   #}
 {% extends '_layout.njk' %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -12,6 +13,30 @@
           <input class="govuk-input" id="event-name" name="q" type="text">
         </div>
         <input type="hidden" name="prompt" value="GENERATE_PROMPT_1">
+        {{ govukRadios({
+            classes: "govuk-radios--small",
+            name: "querytype",
+            fieldset: {
+              legend: {
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            items: [
+                {
+                  value: "sql",
+                  text: "Query science search database"
+                },
+                {
+                  value: "llm",
+                  text: "LLM lookup"
+                }
+              ],
+              errorMessage: {
+                text: ''
+              }
+          }) }}
+          
         <button type="submit" class="govuk-button" data-module="govuk-button">
           Go
         </button>
