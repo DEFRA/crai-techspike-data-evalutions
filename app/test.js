@@ -2,7 +2,7 @@ require('dotenv').config({ path: `${__dirname}/../.env`, debug: false })
 const { getVectorStore, ingestDocuments } = require('./services/vector-store')
 const { loadFile, loadFilesFromFolder } = require('./services/document-loader')
 const { model, embeddings } = require('./llm/ai')
-const { generateResponse } = require('./llm/generate')
+const { generateResponse } = require('./llm/generate-llm')
 const { prompts, types } = require('./llm/prompts')
 
 

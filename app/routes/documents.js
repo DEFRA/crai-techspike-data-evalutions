@@ -2,7 +2,7 @@ const fs = require("fs")
 const { getVectorStore, ingestDocuments } = require('../services/vector-store')
 const { loadFile, loadFilesFromFolder } = require('../services/document-loader')
 const { useModel, ollamaModel, model, embeddings } = require('../llm/ai')
-const { generateResponse } = require('../llm/generate')
+const { generateResponse } = require('../llm/generate-llm')
 const { prompts, types } = require('../llm/prompts')
 
 module.exports = [{
