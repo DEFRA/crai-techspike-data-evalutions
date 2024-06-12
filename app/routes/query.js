@@ -49,7 +49,7 @@ module.exports = [{
         }
       }
 
-      return h.view('query', { query: q, response, context }).code(200)
+      return h.view('query', { query: q, response, context, querytype }).code(200)
     }
   }
 }]
