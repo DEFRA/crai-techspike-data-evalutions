@@ -3,6 +3,8 @@ const types = {
   GENERATE_PROMPT_2: 'generate2',
   GENERATE_PROMPT_3: 'generate3',
   GENERATE_PROMPT_4: 'generate4',
+  GENERATE_PROMPT_SQL1: 'sql1',
+  GENERATE_PROMPT_SQL2: 'sql2',
 }
 
 const generatePrompt1 = `
@@ -89,11 +91,31 @@ If you are unable to extract any relevant information or identify any points of 
 [/CONTEXT]
 `
 
+const generateSQLPrompt1 = `
+Based on the table schema below, write a SQL query that would answer the user's question:
+{schema}
+
+Question: {question}
+SQL Query:
+`
+
+const generateSQLPrompt2 = `
+Based on the table schema below, question, sql query, and sql response, write a natural language response:
+{schema}
+
+Question: {question}
+SQL Query: {query}
+SQL Response: {response}
+`
+
+
 const prompts = {
   [types.GENERATE_PROMPT_1]: generatePrompt1,
   [types.GENERATE_PROMPT_2]: generatePrompt2,
   [types.GENERATE_PROMPT_3]: generatePrompt3,
-  [types.GENERATE_PROMPT_4]: generatePrompt4
+  [types.GENERATE_PROMPT_4]: generatePrompt4,
+  [types.GENERATE_PROMPT_SQL1]: generateSQLPrompt1,
+  [types.GENERATE_PROMPT_SQL2]: generateSQLPrompt2
 }
 
 module.exports = {

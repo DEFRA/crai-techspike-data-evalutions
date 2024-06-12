@@ -1,6 +1,6 @@
 const fs = require("fs")
 const { model } = require('../llm/ai')
-const { generateResponse } = require('../llm/generate')
+const { generateResponse } = require('../llm/generate-llm')
 const { prompts, types } = require('../llm/prompts')
 require('dotenv').config()
 
