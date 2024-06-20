@@ -1,17 +1,19 @@
 const { RunnablePassthrough, RunnableMap, RunnableLambda, RunnableSequence } = require('@langchain/core/runnables')
 const { StringOutputParser } = require('@langchain/core/output_parsers')
 const { ChatPromptTemplate } = require('@langchain/core/prompts')
+const { CallbackHandler } = require('langfuse-langchain')
 const { formatDocumentsAsString } = require('langchain/util/document')
 const { getVectorStore } = require('../services/vector-store')
+const { useModel } = require('../llm/ai')
 
-const getRetriever = async () => {
-  const vectorStore = await getVectorStore('load')
-
+const getRetriever = async (userModel) => {
+  const vectorStore = await getVectorStore('load', userModel)
+console.log(JSON.stringify(vectorStore))
   return vectorStore.asRetriever()
 }
 
-const buildGenerateChain = async (llm, prompt) => {
-  const retriever = await getRetriever()
+const buildGenerateChain = async (llm, prompt, userModel) => {
+  const retriever = await getRetriever(userModel)
 
   let retrieveChain = new RunnableMap({
     steps: {
@@ -40,11 +42,16 @@ const buildGenerateChain = async (llm, prompt) => {
   return retrieveChain
 }
 
-const generateResponse = async (llm, prompt, document) => {
-  const chain = await buildGenerateChain(llm, prompt)
+const generateResponse = async (llm, prompt, document, userModel = useModel) => {
+  const chain = await buildGenerateChain(llm, prompt, userModel)
+
+  const langfuseHandler = new CallbackHandler()
 
   const generate = await chain.invoke({
     document
+  //},
+  //{
+  //  callbacks: [langfuseHandler]
   })
 
   return generate

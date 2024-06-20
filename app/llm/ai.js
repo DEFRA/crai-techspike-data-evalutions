@@ -2,7 +2,6 @@ const { ChatOpenAI, OpenAIEmbeddings } = require('@langchain/openai')
 const { ChatOllama } = require('@langchain/community/chat_models/ollama')
 const { OllamaEmbeddings } = require('@langchain/community/embeddings/ollama')
 const isDocker = require('is-docker')
-
 const aiConfig = require('../config/ai')
 require('dotenv').config()
 
@@ -22,8 +21,8 @@ const onFailedAttempt = async (error) => {
   }
 }
 
-const embeddings = () => {
-  if (useModel === 'ollama') {
+const embeddings = (userModel = useModel) => {
+  if (userModel === 'ollama') {
     return new OllamaEmbeddings({
       baseUrl: `http://${ollamaUrl}:11434`,
       model: ollamaModel,
@@ -41,8 +40,8 @@ const embeddings = () => {
   })
 }
 
-const model = (temperature = 0.9) => {
-  if (useModel === 'ollama') {
+const model = (userModel = useModel, temperature = 0.9) => {
+  if (userModel === 'ollama') {
     return new ChatOllama({
       baseUrl: `http://${ollamaUrl}:11434`,
       model: ollamaModel

@@ -1,31 +1,35 @@
 const { PGVectorStore } = require('@langchain/community/vectorstores/pgvector')
-const { QdrantVectorStore } = require('@langchain/community/vectorstores/qdrant')
 const { HNSWLib } = require('@langchain/community/vectorstores/hnswlib')
 const { useModel, ollamaModel, embeddings } = require('../llm/ai')
 const dbConfig = require('../config/db')
 
 let vectorStore
 
-const getVectorStore = async (mode) => {
+const getVectorStore = async (mode, userModel = useModel) => {
+  //if (vectorStore) {
+  //  return vectorStore
+  //}
+
   if (useModel === 'ollama') {
     if (mode === 'load') {
-      vectorStore = await HNSWLib.load(`${__dirname}/../data/HNSWLib_${ollamaModel}/`, embeddings())
+      vectorStore = await HNSWLib.load(
+        `${__dirname}/../data/HNSWLib_${ollamaModel}/`,
+        embeddings(userModel)
+      )
     } else {
       vectorStore = new HNSWLib(
-        embeddings(),
+        embeddings(userModel),
         {
           space: 'cosine'
         }
       )
     }
-  }
 
-  if (vectorStore) {
     return vectorStore
   }
 
   vectorStore = await PGVectorStore.initialize(
-    embeddings(),
+    embeddings(userModel),
     dbConfig
   )
 

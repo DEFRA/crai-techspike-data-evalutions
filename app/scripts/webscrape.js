@@ -143,8 +143,8 @@ const loadPage = async (url) => {
   return results
 }
 
-const splitDates = async (filename) => {
-  const data = fs.readFileSync(filename)
+const splitDates = async (fileName) => {
+  const data = fs.readFileSync(fileName)
   const results = JSON.parse(data)
   const updated = []
 
@@ -166,7 +166,7 @@ const splitDates = async (filename) => {
     updated.push(item)
   }
 
-  fs.writeFile(filename, JSON.stringify(updated),
+  fs.writeFile(fileName, JSON.stringify(updated),
   err => {
     if (err) throw err
     console.log('Finished')
@@ -176,15 +176,16 @@ const splitDates = async (filename) => {
 
 (async () => {
   const url = 'https://sciencesearch.defra.gov.uk/'
-  const filename = 'pages.json'
+  const directoryPath = `${__dirname}/../data/`
+  const fileName = 'pages1.json'
   /*await loadPages(url)
   //console.log((pages))
 
-  fs.writeFile(filename, JSON.stringify(pages),
+  fs.writeFile(`${directoryPath}${fileName}`, JSON.stringify(pages),
   err => {
     if (err) throw err
     console.log('Finished')
   })*/
 
-  //await splitDates(filename)
+  //await splitDates(`${directoryPath}${fileName}`)
 })()

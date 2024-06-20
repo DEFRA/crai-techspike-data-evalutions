@@ -4,4 +4,4 @@ helm/**/*.lock
 *.tgz
 .vscode
 .env
-data
+/data
