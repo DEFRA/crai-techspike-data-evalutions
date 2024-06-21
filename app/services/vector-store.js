@@ -6,11 +6,7 @@ const dbConfig = require('../config/db')
 let vectorStore
 
 const getVectorStore = async (mode, userModel = useModel) => {
-  //if (vectorStore) {
-  //  return vectorStore
-  //}
-
-  if (useModel === 'ollama') {
+  if (userModel === 'ollama') {
     if (mode === 'load') {
       vectorStore = await HNSWLib.load(
         `${__dirname}/../data/HNSWLib_${ollamaModel}/`,

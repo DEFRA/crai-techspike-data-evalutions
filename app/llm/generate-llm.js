@@ -8,7 +8,7 @@ const { useModel } = require('../llm/ai')
 
 const getRetriever = async (userModel) => {
   const vectorStore = await getVectorStore('load', userModel)
-console.log(JSON.stringify(vectorStore))
+
   return vectorStore.asRetriever()
 }
 
@@ -49,9 +49,9 @@ const generateResponse = async (llm, prompt, document, userModel = useModel) => 
 
   const generate = await chain.invoke({
     document
-  //},
-  //{
-  //  callbacks: [langfuseHandler]
+  },
+  {
+    callbacks: [langfuseHandler]
   })
 
   return generate
