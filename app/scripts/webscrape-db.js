@@ -102,7 +102,7 @@ const importData = async (fileName) => {
 (async () => {
   const url = 'https://sciencesearch.defra.gov.uk/'
   const directoryPath = `${__dirname}/../data/`
-  const fileName = 'pages1.json'
+  const fileName = 'sciencesearch.defra.gov.uk_evaluations.json'
 
   //const fields = await inspect(fileName)
   //console.log('fields', fields)

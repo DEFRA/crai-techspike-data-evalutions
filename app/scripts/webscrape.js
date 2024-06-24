@@ -7,7 +7,7 @@ const { convert } = require('html-to-text');
 let pages = []
 let pageCount = 1
 
-const loadPages = async (url) => {
+const loadPages = async (url, filter) => {
   const resultsListPlaywright = async (page) => {
     const results = []
     const titles = page.locator('p[class="govuk-body-l govuk-!-margin-bottom-1"]')
@@ -65,6 +65,13 @@ const loadPages = async (url) => {
   const page = await browser.newPage()
   await page.goto(url, { waitUntil: 'networkidle' })
 
+  // Filter by "Evaluation" keyword
+  if (filter !== '') {
+    await page.locator('span[class="govuk-details__summary-text filter-bold-link"]').locator('text="Keywords"').click()
+    await page.waitForSelector('#key271', { state: 'visible' })
+    await page.click('#key271')
+  }
+
   // Click search results
   const searchSelector = '.filter-search-button'
   const loadedSelector = 'main#searchResuls'
@@ -76,6 +83,13 @@ const loadPages = async (url) => {
   await page.waitForSelector(loadedSelector)
   const html = await page.locator(loadedSelector).evaluate(el => el.outerHTML)
   let $ = cheerio.load(html)
+
+  // Inspect number of results
+  const titles = $('h2[class="govuk-fieldset__heading"]').map((i, el) => {
+    return $(el).text().trim()
+  }).toArray()
+  console.log('title', titles[0])
+
   let results = await resultsListCheerio($)
   pages = [...pages, ...results]
 
@@ -143,9 +157,7 @@ const loadPage = async (url) => {
   return results
 }
 
-const splitDates = async (fileName) => {
-  const data = fs.readFileSync(fileName)
-  const results = JSON.parse(data)
+const splitDates = (results) => {
   const updated = []
 
   for (const item of results) {
@@ -166,6 +178,14 @@ const splitDates = async (fileName) => {
     updated.push(item)
   }
 
+  return updated
+}
+
+const splitDatesAndSave = async (fileName) => {
+  const data = fs.readFileSync(fileName)
+  const results = JSON.parse(data)
+  const updated = splitDates(results)
+
   fs.writeFile(fileName, JSON.stringify(updated),
   err => {
     if (err) throw err
@@ -177,15 +197,17 @@ const splitDates = async (fileName) => {
 (async () => {
   const url = 'https://sciencesearch.defra.gov.uk/'
   const directoryPath = `${__dirname}/../data/`
-  const fileName = 'pages1.json'
-  /*await loadPages(url)
+  const filter = 'evaluations'
+  const fileName = `sciencesearch.defra.gov.uk${filter != '' ? '_' + filter : ''}.json`
+  await loadPages(url, filter)
+  pages = splitDates(pages)
   //console.log((pages))
 
   fs.writeFile(`${directoryPath}${fileName}`, JSON.stringify(pages),
   err => {
     if (err) throw err
     console.log('Finished')
-  })*/
+  })/**/
 
-  //await splitDates(`${directoryPath}${fileName}`)
+  //await splitDatesAndSave(`${directoryPath}${fileName}`)
 })()

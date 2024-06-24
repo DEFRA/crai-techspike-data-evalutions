@@ -16,7 +16,7 @@ const loadDb = async (tableName, contentColumn, metadataColumns) => {
   })
 
   await client.connect()
-  const rs = await client.query(`SELECT * FROM ${tableName} LIMIT 1000`)
+  const rs = await client.query(`SELECT * FROM ${tableName} LIMIT 10000`)
 
   for (const item of rs.rows) {
     const doc = createDocument(item, contentColumn, metadataColumns)
