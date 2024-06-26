@@ -20,7 +20,7 @@ If the `sciencesearch` table is present and contains existing data, delete prese
 
 # Creating vector embeddings
 
-To create vector embeddings, spin up the html app `docker-compose up --build` and navigate to the page [http://localhost:3000/documents/injestdb](http://localhost:3000/documents/injestdb).
+To create vector embeddings, spin up the html app `docker-compose up --build` and navigate to the page [http://localhost:3000/documents/ingestdb](http://localhost:3000/documents/ingestdb).
 
 This will read the following environment variables:
 

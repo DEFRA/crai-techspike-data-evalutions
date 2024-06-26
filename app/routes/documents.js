@@ -51,6 +51,7 @@ module.exports = [{
     handler: async (request, h) => {
       let response = ''
 
+      const modelName = useModel === 'ollama' ? ollamaModel : 'oai'
       const tableName = 'sciencesearch'
       const contentColumn = 'Description'
       const metadataColumns = ['id', 'title', 'summary', 'href', 'Contractor / Funded Organisations', 'Keywords',
@@ -72,15 +73,15 @@ module.exports = [{
 
           await vectorStore.addDocuments([doc])
 
-          if (useModel === 'ollama' && count % batchSize === 0) {
-            await vectorStore.save(`${__dirname}/../data/HNSWLib_${ollamaModel}/`)
+          if (/*useModel === 'ollama' &&*/ count % batchSize === 0) {
+            await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
             console.log(`Saving ${count} / ${docs.length}`)
           }
         }
 
-        if (useModel === 'ollama') {
-          await vectorStore.save(`${__dirname}/../data/HNSWLib_${ollamaModel}/`)
-        }
+        //if (useModel === 'ollama') {
+          await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
+        //}
 
         response = `${docs.length} documents processed.`
       }
@@ -99,6 +100,7 @@ module.exports = [{
     handler: async (request, h) => {
       let response = ''
 
+      const modelName = useModel === 'ollama' ? ollamaModel : 'oai'
       const contentColumn = 'Description'
       const metadataColumns = ['id', 'title', 'summary', 'href', 'Contractor / Funded Organisations', 'Keywords',
             'Field of Study', 'Date From', 'Date To', 'Cost', 'Objective', 'Project Documents']
@@ -124,13 +126,13 @@ module.exports = [{
           await vectorStore.addDocuments([doc])
 
           if (useModel === 'ollama' && count % batchSize === 0) {
-            await vectorStore.save(`${__dirname}/../data/HNSWLib_${ollamaModel}/`)
+            await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
             console.log(`Saving ${count} / ${docs.length}`)
           }
         }
 
         if (useModel === 'ollama') {
-          await vectorStore.save(`${__dirname}/../data/HNSWLib_${ollamaModel}/`)
+          await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
         }
 
         response = `${docs.length} documents processed.`

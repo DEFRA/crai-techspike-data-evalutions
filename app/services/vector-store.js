@@ -6,15 +6,33 @@ const dbConfig = require('../config/db')
 let vectorStore
 
 const getVectorStore = async (mode, userModel = useModel) => {
+  const modelName = userModel === 'ollama' ? ollamaModel : 'oai'
+
   if (userModel === 'ollama') {
     if (mode === 'load') {
       vectorStore = await HNSWLib.load(
-        `${__dirname}/../data/HNSWLib_${ollamaModel}/`,
+        `${__dirname}/../data/HNSWLib_${modelName}/`,
         embeddings(userModel)
       )
     } else {
       vectorStore = new HNSWLib(
         embeddings(userModel),
+        {
+          space: 'cosine'
+        }
+      )
+    }
+
+    return vectorStore
+  } else {
+    if (mode === 'load') {
+      vectorStore = await HNSWLib.load(
+        `${__dirname}/../data/HNSWLib_${modelName}/`,
+        embeddings('')
+      )
+    } else {
+      vectorStore = new HNSWLib(
+        embeddings(''),
         {
           space: 'cosine'
         }
