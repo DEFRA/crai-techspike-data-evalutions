@@ -3,6 +3,7 @@ const { DirectoryLoader } = require('langchain/document_loaders/fs/directory')
 const { DocxLoader } = require('langchain/document_loaders/fs/docx')
 const { PDFLoader } = require('langchain/document_loaders/fs/pdf')
 const { TextLoader } = require('langchain/document_loaders/fs/text')
+require('dotenv').config()
 
 const loadFile = async (fileName) => {
   const fileType = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase()
@@ -22,9 +23,10 @@ const loadFile = async (fileName) => {
 
   const docs = await loader.load()
 
+  console.log(`Splitting into chunk size ${process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000}, overlap ${process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200}`)
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200
+    chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10),
+    chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10)
   })
 
   return splitter.splitDocuments(docs)
@@ -48,8 +50,8 @@ const loadFilesFromFolder = async (folderName) => {
   const docs = await directoryLoader.load()
 
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
+    chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10),
+    chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10)
   })
 
   return splitter.splitDocuments(docs)

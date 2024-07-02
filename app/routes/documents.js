@@ -2,7 +2,8 @@ const fs = require("fs")
 const { getVectorStore } = require('../services/vector-store')
 const { loadFile } = require('../services/document-loader')
 const { loadDb, loadJson } = require('../services/db-loader')
-const { useModel, ollamaModel } = require('../llm/ai')
+const { useModel, ollamaModel, saveDir } = require('../llm/ai')
+require('dotenv').config()
 
 module.exports = [{
   method: 'GET',
@@ -33,7 +34,7 @@ module.exports = [{
           await vectorStore.addDocuments(docs)
         }
         if (useModel === 'ollama') {
-          await vectorStore.save(`${__dirname}/../data/HNSWLib_${ollamaModel}/`)
+          await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${ollamaModel}/`)
         }
       }
       catch (error) {
@@ -74,22 +75,23 @@ module.exports = [{
           await vectorStore.addDocuments([doc])
 
           if (/*useModel === 'ollama' &&*/ count % batchSize === 0) {
-            await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
+            await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
             console.log(`Saving ${count} / ${docs.length}`)
           }
         }
 
         //if (useModel === 'ollama') {
-          await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
+          await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
         //}
 
         response = `${docs.length} documents processed.`
       }
       catch (error) {
-        console.log(error)
+        response = error.toString()
+        console.log(response)
       }
 
-      return { response: response }
+      return { response, useModel: useModel === 'ollama' ? 'ollama' : 'oai', modelName, saveDir, chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10), chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10) }
     }
   }
 },
@@ -126,22 +128,23 @@ module.exports = [{
           await vectorStore.addDocuments([doc])
 
           if (useModel === 'ollama' && count % batchSize === 0) {
-            await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
+            await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
             console.log(`Saving ${count} / ${docs.length}`)
           }
         }
 
         if (useModel === 'ollama') {
-          await vectorStore.save(`${__dirname}/../data/HNSWLib_${modelName}/`)
+          await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
         }
 
         response = `${docs.length} documents processed.`
       }
       catch (error) {
-        console.log(error)
+        response = error.toString()
+        console.log(response)
       }
 
-      return { response: response }
+      return { response, useModel: useModel === 'ollama' ? 'ollama' : 'oai', modelName, saveDir, chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10), chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10) }
     }
   }
 }]

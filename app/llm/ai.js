@@ -9,6 +9,8 @@ const useModel = process.env.USE_MODEL
 const ollamaModel = process.env.OLLAMA_MODEL
 const ollamaModels = ['llama3', 'mistral', 'phi3:medium', 'gemma', 'aya']
 const ollamaUrl = isDocker() ? 'host.docker.internal' : 'localhost'
+const vectorSpace = process.env.VECTOR_SPACE || 'cosine'
+const saveDir = `${vectorSpace}-${process.env.TEXT_SPLITTER_CHUNK_SIZE || '1000'}-${process.env.TEXT_SPLITTER_CHUNK_OVERLAP || '200'}`
 /*
 $ ollama pull llama3
 $ ollama run llama3
@@ -60,5 +62,7 @@ module.exports = {
   useModel,
   ollamaModel,
   embeddings,
-  model
+  model,
+  vectorSpace,
+  saveDir
 }

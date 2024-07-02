@@ -1,46 +1,39 @@
 const { PGVectorStore } = require('@langchain/community/vectorstores/pgvector')
 const { HNSWLib } = require('@langchain/community/vectorstores/hnswlib')
-const { useModel, ollamaModel, embeddings } = require('../llm/ai')
+const { useModel, ollamaModel, embeddings, vectorSpace, saveDir } = require('../llm/ai')
 const dbConfig = require('../config/db')
 
 let vectorStore
 
+/*
+HNSWLib available spaces are:
+- cosine: cosine similarity
+- ip: inner product
+- l2: squared L2
+ref: https://github.com/nmslib/hnswlib
+*/
+
 const getVectorStore = async (mode, userModel = useModel) => {
   const modelName = userModel === 'ollama' ? ollamaModel : 'oai'
+  const model = userModel === 'ollama' ? userModel : ''
 
-  if (userModel === 'ollama') {
+  //if (userModel === 'ollama') {
     if (mode === 'load') {
       vectorStore = await HNSWLib.load(
-        `${__dirname}/../data/HNSWLib_${modelName}/`,
-        embeddings(userModel)
+        `${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`,
+        embeddings(model)
       )
     } else {
       vectorStore = new HNSWLib(
-        embeddings(userModel),
+        embeddings(model),
         {
-          space: 'cosine'
+          space: vectorSpace
         }
       )
     }
 
     return vectorStore
-  } else {
-    if (mode === 'load') {
-      vectorStore = await HNSWLib.load(
-        `${__dirname}/../data/HNSWLib_${modelName}/`,
-        embeddings('')
-      )
-    } else {
-      vectorStore = new HNSWLib(
-        embeddings(''),
-        {
-          space: 'cosine'
-        }
-      )
-    }
-
-    return vectorStore
-  }
+  //}
 
   vectorStore = await PGVectorStore.initialize(
     embeddings(userModel),

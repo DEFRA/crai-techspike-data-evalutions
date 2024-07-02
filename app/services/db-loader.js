@@ -3,6 +3,7 @@ const { Client } = require('pg')
 const { Document } = require ('langchain/document')
 const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 const dbConfig = require('../config/db')
+require('dotenv').config()
 
 const loadDb = async (tableName, contentColumn, metadataColumns) => {
   const docs = []
@@ -26,9 +27,10 @@ const loadDb = async (tableName, contentColumn, metadataColumns) => {
 
   await client.end()
 
+  console.log(`Splitting into chunk size ${process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000}, overlap ${process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200}`)
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
+    chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10),
+    chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10)
   })
 
   return splitter.splitDocuments(docs)
@@ -45,8 +47,8 @@ const loadJson = async (fileName, contentColumn, metadataColumns) => {
   }
 
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
+    chunkSize: parseInt(process.env.TEXT_SPLITTER_CHUNK_SIZE || 1000, 10),
+    chunkOverlap: parseInt(process.env.TEXT_SPLITTER_CHUNK_OVERLAP || 200, 10)
   })
 
   return splitter.splitDocuments(docs)
