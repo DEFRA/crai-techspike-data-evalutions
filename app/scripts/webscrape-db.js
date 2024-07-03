@@ -104,10 +104,5 @@ const importData = async (fileName) => {
   const directoryPath = `${__dirname}/../data/`
   const fileName = 'sciencesearch.defra.gov.uk_evaluations.json'
 
-  //const fields = await inspect(fileName)
-  //console.log('fields', fields)
-
-  //await saveCsv(fileName)
-
   await importData(`${directoryPath}${fileName}`)
 })()

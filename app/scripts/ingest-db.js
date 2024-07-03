@@ -33,15 +33,13 @@ const { useModel, ollamaModel, saveDir } = require('../llm/ai');
 
       await vectorStore.addDocuments([doc])
 
-      if (/*useModel === 'ollama' &&*/ count % batchSize === 0) {
+      if (count % batchSize === 0) {
         await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
         console.log(`Saving ${count} / ${docs.length}`)
       }
     }
 
-    //if (useModel === 'ollama') {
-      await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
-    //}
+    await vectorStore.save(`${__dirname}/../data/${saveDir}/HNSWLib_${modelName}/`)
 
     response = `${docs.length} documents processed.`
   }

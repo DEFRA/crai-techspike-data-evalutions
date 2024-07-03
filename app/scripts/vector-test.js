@@ -16,12 +16,6 @@ const { useModel, ollamaModel, saveDir } = require('../llm/ai');
   let testStr = 'who established the Inshore Fisheries and Conservation Authorities'
   const vectorStore = await getVectorStore('load', useModel)
 
-  /*
-  const result = await vectorStore.similaritySearch(testStr, 3)
-  const result = await vectorStore.similaritySearchWithScore(testStr, 3)
-  */
-
   const result = await vectorStore.similaritySearchWithScore(testStr, 1)
   console.log(result)
 })()
-
