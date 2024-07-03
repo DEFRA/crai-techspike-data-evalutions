@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const { SqlDatabase } = require('langchain/sql_db')
 const { BaseMessage } = require('@langchain/core/messages')
 const { ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts')
@@ -8,29 +6,25 @@ const { StringOutputParser } = require('@langchain/core/output_parsers')
 const { RunnablePassthrough, RunnableSequence } = require('@langchain/core/runnables')
 const { CallbackHandler } = require('langfuse-langchain')
 const { DataSource } = require('typeorm')
-const { model } = require('./ai')
 const { prompts, types } = require('./prompts')
 const dbConfig = require('../config/db')
 
-
-const dbConnection = {
-  type: dbConfig.postgresConnectionOptions.type,
-  host: 'localhost', //dbConfig.postgresConnectionOptions.host,
-  port: dbConfig.postgresConnectionOptions.port,
-  username: dbConfig.postgresConnectionOptions.user,
-  password: dbConfig.postgresConnectionOptions.password,
-  database: dbConfig.postgresConnectionOptions.database
-}
-
-const generateResponse = async (document) => {
-  const datasource = new DataSource(dbConnection)
+const generateResponse = async (llm, document) => {
+  const datasource = new DataSource({
+    type: dbConfig.postgresConnectionOptions.type,
+    host: dbConfig.postgresConnectionOptions.host,
+    port: dbConfig.postgresConnectionOptions.port,
+    username: dbConfig.postgresConnectionOptions.user,
+    password: dbConfig.postgresConnectionOptions.password,
+    database: dbConfig.postgresConnectionOptions.database
+  })
   const db = await SqlDatabase.fromDataSourceParams({
     appDataSource: datasource,
     ignoreTables: [dbConfig.tableName]
   })
 
   const getSchema = async () => db.getTableInfo()
-  const llm = model()
+  let sql
 
   const prompt = ChatPromptTemplate.fromMessages([
     ['system', 'Given an input question, convert it to a SQL query. No pre-amble.'],
@@ -54,7 +48,7 @@ const generateResponse = async (document) => {
       }
     }),
     prompt,
-    llm.bind(stop=["\nSQLResult:"]),
+    llm.bind(stop=['\nSQLResult:']),
     new StringOutputParser()
   ])
 
@@ -84,7 +78,10 @@ const generateResponse = async (document) => {
     }),
     RunnablePassthrough.assign({
       schema: getSchema,
-      response: (x) => db.run(x['query'])
+      response: (x) => {
+        sql = x['query']
+        return db.run(sql)
+      }
     }),
     promptResponse,
     llm,
@@ -93,16 +90,20 @@ const generateResponse = async (document) => {
 
   const langfuseHandler = new CallbackHandler()
 
-  const result = await chain.invoke({
+  const generate = await chain.invoke({
     question: document,
     chat_history: []
   },
   {
     callbacks: [langfuseHandler]
   })
-  console.log(result)
 
   await datasource.destroy()
+
+  return {
+    response: generate,
+    sql: sql
+  }
 }
 
 module.exports = {

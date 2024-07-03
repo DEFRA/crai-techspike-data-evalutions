@@ -13,26 +13,58 @@
           <input class="govuk-input" id="event-name" name="q" type="text">
         </div>
         <input type="hidden" name="prompt" value="GENERATE_PROMPT_1">
-        {{ govukRadios({
-            classes: "govuk-radios--small",
-            name: "querytype",
-            fieldset: {
-              legend: {
-                isPageHeading: false,
-                classes: "govuk-fieldset__legend--m"
-              }
-            },
-            items: [
-                {
-                  value: "sql",
-                  text: "Query science search database"
-                },
-                {
-                  value: "llm",
-                  text: "LLM lookup"
-                }
-              ]
-          }) }}
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-radios--small" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="sql" name="querytype" type="radio" value="sql">
+                <label class="govuk-label govuk-radios__label" for="sql">
+                  Query science search database (SQL)
+                </label>
+              </div>
+
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="llm" name="querytype" type="radio" value="llm">
+                <label class="govuk-label govuk-radios__label" for="llm">
+                  LLM lookup ({% if llm == 'ollama' %}{{ localLLM }}{% else %}{{ llm }}{% endif %})
+                </label>
+              </div>
+
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="compare-sql-llm" name="querytype" type="radio" value="compare-sql-llm" data-aria-controls="conditional-compare-sql-llm">
+                <label class="govuk-label govuk-radios__label" for="compare-sql-llm">
+                  Compare science search database &amp; LLM
+                </label>
+              </div>
+              <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-compare-sql-llm">
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="compare-sql-llm-reference">
+                    Reference answer
+                  </label>
+                  <input class="govuk-input govuk-!-width-one-third" id="compare-sql-llm-reference" name="referencesql" type="text">
+                </div>
+              </div>
+
+              {% if llm != 'OpenAI ChatGPT 3.5 Turbo' %}
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="compare-oai-llm" name="querytype" type="radio" value="compare-oai-llm" data-aria-controls="conditional-compare-oai-llm">
+                <label class="govuk-label govuk-radios__label" for="compare-oai-llm">
+                  Compare OpenAI ChatGPT 3.5 Turbo &amp; {{ llm }}
+                </label>
+              </div>
+              <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-compare-oai-llm">
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="compare-oai-llm-reference">
+                    Reference answer
+                  </label>
+                  <input class="govuk-input govuk-!-width-one-third" id="compare-oai-llm-reference" name="referenceoai" type="text">
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </fieldset>
+        </div>
           
         <button type="submit" class="govuk-button" data-module="govuk-button">
           Go

@@ -1,17 +1,18 @@
-require('dotenv').config({ path: __dirname + '/../../.env' })
-const { SqlDatabase } = require('langchain/sql_db')
-const { BaseMessage } = require('@langchain/core/messages')
-const { ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts')
-const { BufferMemory, ChatMessageHistory } = require('langchain/memory')
-const { StringOutputParser } = require('@langchain/core/output_parsers')
-const { RunnablePassthrough, RunnableSequence } = require('@langchain/core/runnables')
-const { CallbackHandler } = require('langfuse-langchain')
-const { DataSource } = require('typeorm')
-const { model } = require('../llm/ai')
-const dbConfig = require('../config/db')
+require('dotenv').config({ path: __dirname + '/../../.env' });
+const { SqlDatabase } = require('langchain/sql_db');
+const { BaseMessage } = require('@langchain/core/messages');
+const { ChatPromptTemplate, MessagesPlaceholder } = require('@langchain/core/prompts');
+const { BufferMemory, ChatMessageHistory } = require('langchain/memory');
+const { StringOutputParser } = require('@langchain/core/output_parsers');
+const { RunnablePassthrough, RunnableSequence } = require('@langchain/core/runnables');
+const { CallbackHandler } = require('langfuse-langchain');
+const { DataSource } = require('typeorm');
+const { model } = require('../llm/ai');
+const dbConfig = require('../config/db');
 
 
 // Ref: https://github.com/langchain-ai/langchain/blob/master/templates/sql-ollama/sql_ollama/chain.py
+//      https://js.langchain.com/v0.1/docs/use_cases/sql/quickstart/
 
 //process.env.LANGCHAIN_TRACING_V2 = true
 //process.env.LANGCHAIN_API_KEY = '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'

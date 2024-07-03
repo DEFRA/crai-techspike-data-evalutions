@@ -5,8 +5,8 @@ var format = require('pg-format');
 let converter = require('json-2-csv');
 
 
-const inspect = async (filename) => {
-  const data = fs.readFileSync(filename)
+const inspect = async (fileName) => {
+  const data = fs.readFileSync(fileName)
   const results = JSON.parse(data)
 
   const fields = []
@@ -43,21 +43,21 @@ const inspect = async (filename) => {
   }*/
 }
 
-const saveCsv = async (filename) => {
-  const data = fs.readFileSync(filename)
+const saveCsv = async (fileName) => {
+  const data = fs.readFileSync(fileName)
   const results = JSON.parse(data)
 
   const csv = await converter.json2csv(results)
 
-  fs.writeFile(filename.replace('.json', '.csv'), csv,
+  fs.writeFile(fileName.replace('.json', '.csv'), csv,
   err => {
     if (err) throw err
     console.log('Finished')
   })
 }
 
-const importData = async (filename) => {
-  const data = fs.readFileSync(filename)
+const importData = async (fileName) => {
+  const data = fs.readFileSync(fileName)
   const results = JSON.parse(data) //.splice(0, 1)
 
   const { Client } = pg
@@ -101,12 +101,8 @@ const importData = async (filename) => {
 
 (async () => {
   const url = 'https://sciencesearch.defra.gov.uk/'
-  const filename = 'pages1.json'
+  const directoryPath = `${__dirname}/../data/`
+  const fileName = 'sciencesearch.defra.gov.uk_evaluations.json'
 
-  //const fields = await inspect(filename)
-  //console.log('fields', fields)
-
-  //await saveCsv(filename)
-
-  await importData(filename)
+  await importData(`${directoryPath}${fileName}`)
 })()
